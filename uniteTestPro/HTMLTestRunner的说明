@@ -1,0 +1,43 @@
+参考文章：https://www.cnblogs.com/NancyRM/p/8385850.html
+
+下载地址：
+
+http://tungwaiyip.info/software/HTMLTestRunner.html
+
+下载后的修改：
+94行引入的名称要改，从 import StringIO 改成import io
+539行 self.outputBuffer = StringIO.StringIO() 要改成self.outputBuffer=io.StringIO()
+631行 print >>sys.stderr, '\nTime Elapsed: %s' % (self.stopTime-self.startTime)修改为：print (sys.stderr, '\nTime Elapsed: %s' %(self.stopTime-self.startTime))
+642行，if not rmap.has_key(cls): 需要换成 if not cls in rmap:
+766行的uo = o.decode('latin-1')，改成 uo=o
+772行，把 ue = e.decode('latin-1') 直接改成 ue = e
+注意：该修改针对的是使用Python3的朋友，如果你安装的是Python2，那么就不需要进行修改，直接使用即可。
+
+存放路径：
+
+将修改完成的模块存放在Python路径下Lib目录里面即可
+
+
+
+import unittest
+from HTMLTestRunner import HTMLTestRunner
+import time
+test_dir = './test_case'
+
+discovery = unittest.defaultTestLoader.discover(test_dir, pattern='test*.py')
+
+if __name__ == '__main__':
+    # 存放报告的文件夹
+    report_dir = './test_report'
+    # 报告命名时间格式化
+    now = time.strftime("%Y-%m-%d %H_%M_%S")
+    # 报告文件完整路径
+    report_name = report_dir+'./'+now+"result.html"
+
+    # 打开文件再报告文件写入测试结果
+    with open(report_name, "wb") as f:
+        runner = HTMLTestRunner(stream=f, title='百度搜索测试报告', description='用例执行结果：')
+        # 运行测试用例
+        runner.run(discovery)
+        # 关闭报告文件
+        f.close()
